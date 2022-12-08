@@ -83,7 +83,17 @@ def prim(graph: Graph) -> list[Edge]:
     # filtered away when you see them later anyway.
 
     # FIXME: Algorithm needed here!
-    ...
+    for _ in range(graph.no_nodes - 1):
+        lowestWeight = heapq.heappop(heap)
+        while lowestWeight.dst in seen:
+            lowestWeight = heapq.heappop(heap)
+
+        tree.append(lowestWeight)
+        seen.add(lowestWeight.dst)
+
+        nextEdges = graph.edges[lowestWeight.dst][:]
+        heapq.heapify(nextEdges)
+        heap = list(heapq.merge(heap, nextEdges))
 
     return tree
 
