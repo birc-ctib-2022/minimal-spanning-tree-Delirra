@@ -9,7 +9,7 @@ Edge = tuple[Node, Weight, Node]
 
 
 class Graph:
-    """Adjecency list representation of a graph."""
+    """Adjacency list representation of a graph."""
 
     no_nodes: int
     edges: list[list[Edge]]
@@ -88,8 +88,8 @@ class MinHeap:
     # the heap. The self._index list handles that, and it
     # contains None or node ids as nodes we have deleted
     # are no longer in the heap, but their id still exist
-    # as an index. This also lets us recognise if we
-    # try to insert an endge (src,w,dst) where dst is already
+    # as an index. This also lets us recognize if we
+    # try to insert an edge (src,w,dst) where dst is already
     # in the tree.
     #
     # The self._src can also contain None, but
@@ -102,7 +102,7 @@ class MinHeap:
     # are not all connected in the input graph.
 
     # This is the list we use for the heap structure,
-    # the others contain auxilary data
+    # the others contain auxiliary data
     _nodes: list[Node]
     _index: list[Optional[int]]  # Maps nodes to indices in _nodes
     _weights: list[Weight]      # The weight to get to a given node
@@ -212,18 +212,33 @@ def prim(graph: Graph) -> list[Edge]:
     # it can happen more than once, but in the example this doesn't
     # happen.
     #
-    # So, keep poping edges (src,w,dst) and if src is not None,
+    # So, keep popping edges (src,w,dst) and if src is not None,
     # add the edge to the tree. Then consider all the new edges
     # out of dst, graph.edges[dst]. They might provide a cheaper
     # way to get to new nodes, so decrease the cost of getting to
     # each destination. Don't worry if the destination is already
     # in the tree or if the destination already has a cheaper path;
     # the decrease_weight() method will only update the weight
-    # if you truely have a cheaper route to a node outside of
+    # if you truly have a cheaper route to a node outside of
     # the tree.
 
     # FIXME: Algorithm needed here!
-    ...
+
+    first_node = heap.pop()
+    first_edges_out = graph.edges[first_node[2]]
+
+    for edge in first_edges_out:
+        src, w, dst = edge[0], edge[1], edge[2]
+        heap.decrease_weight(dst, w, src)
+
+    while heap._nodes:
+        next_node = heap.pop()
+        if next_node[0] is not None:
+            tree.append(next_node)
+            edges_out = graph.edges[next_node[2]]
+            for edge in edges_out:
+                src, w, dst = edge[0], edge[1], edge[2]
+                heap.decrease_weight(dst, w, src)
 
     return tree
 
